@@ -1,0 +1,96 @@
+int main()
+
+    {
+        int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+
+        struct sockaddr_in serveraddr;
+        memset(&serveraddr, 0, sizeof(struct sockaddr_in));
+
+        serveraddr.sin_family = AF_INET;
+        serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
+        serveraddr.sin_port = htons(2048);
+
+        if (-1 == bind(sockfd,(struct sockaddr*)&serveraddr, sizeof(struct sockaddr)))
+        {
+            perror("bind");
+            return -1;
+        }
+
+        listen(sockfd, 10);
+
+        getchar();
+
+    }
+
+
+创建一个套接字：int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+socket 函数用于创建一个新的套接字。它的参数有以下含义：
+
+AF_INET：表示使用 IPv4 协议。
+SOCK_STREAM：表示创建一个基于流的套接字，即 TCP 套接字。
+0：表示使用默认的协议号。
+初始化服务器地址：struct sockaddr_in serveraddr; memset(&serveraddr, 0, sizeof(struct sockaddr_in));
+struct sockaddr_in 是一个用于表示 IPv4 地址的结构体。memset 函数用于将结构体的所有字节设置为 0。
+
+设置服务器地址：serveraddr.sin_family = AF_INET; serveraddr.sin_addr.s_addr = htonl(INADDR_ANY); serveraddr.sin_port = htons(2048);
+sin_family 字段表示套接字地址的协议类型，这里设置为 IPv4。
+
+sin_addr.s_addr 字段表示套接字地址的 IP 地址部分，这里设置为 INADDR_ANY，表示绑定到所有本地接口。
+
+sin_port 字段表示套接字地址的端口号，这里设置为 2048。
+
+htons 和 htonl 函数用于将主机字节序转换为网络字节序。
+
+绑定套接字：if (-1 == bind(sockfd,(struct sockaddr*)&serveraddr, sizeof(struct sockaddr))) { perror("bind"); return -1; }
+bind 函数用于将套接字与套接字地址关联起来。如果绑定失败，会调用 perror 函数打印出错误信息，并返回 -1。
+
+开始监听：listen(sockfd, 10);
+listen 函数用于指定服务器套接字将处于监听状态，等待接收新的连接请求。第一个参数是套接字描述符，第二个参数是等待接收新连接的最大连接请求数。
+
+等待用户输入：getchar();
+getchar 函数用于读取和返回下一个字符。在这里，它用于等待用户输入，以便在用户输入后才退出程序。
+
+注意，这段代码只是创建了一个基本的 TCP 服务器，并没有处理客户端连接。在实际应用中，需要在监听新连接时，接收并处理客户端的请求。
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+sockaddr_in 是 C 语言中的一个标准的结构体类型，用于表示 Internet Protocol (IPv4) 地址。它是由操作系统提供的，通常在头文件 <arpa/inet.h> 中定义。
+
+sockaddr_in 结构体的定义如下：
+
+struct sockaddr_in {
+    short sin_family;
+    u_short sin_port;
+    struct in_addr sin_addr;
+    char sin_zero[8];
+};
+sockaddr_in 结构体的成员含义如下：
+
+sin_family：表示套接字地址的协议类型，通常为 AF_INET（表示 IPv4）。
+sin_port：表示套接字地址的端口号。
+sin_addr：表示套接字地址的 IP 地址部分。
+sin_zero：保留字段，初始化为 0。
+在使用 socket 函数创建套接字时，需要将套接字地址结构体的 sin_family 字段设置为 AF_INET，表示使用 IPv4 协议。在绑定套接字时，需要将套接字地址结构体的 sin_addr 字段设置为套接字的本地 IP 地址，以及将 sin_port 字段设置为套接字的端口号。
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+在网络编程中，htons 和 htonl 是两个常用的函数，用于在主机字节序和网络字节序之间进行转换。
+
+htons 函数用于将主机字节序的端口号转换为网络字节序的端口号。它的原型如下：
+
+u_short htons(u_short host_port);
+host_port 是主机字节序的端口号。htons 函数返回的是网络字节序的端口号。
+
+htonl 函数用于将主机字节序的长整型数据（如 IP 地址）转换为网络字节序的长整型数据。它的原型如下：
+
+c
+u_long htonl(u_long host_addr);
+host_addr 是主机字节序的长整型数据。htonl 函数返回的是网络字节序的长整型数据。
+
+在网络编程中，由于套接字地址结构体（如 sockaddr_in）的某些字段需要以网络字节序存储，因此在使用这些结构体时，需要使用 htons 和 htonl 函数进行转换。例如，在绑定套接字时，需要将端口号和 IP 地址转换为网络字节序，如下所示：
+
+c
+serveraddr.sin_port = htons(2048);
+serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
+在这个例子中，2048 是主机字节序的端口号，INADDR_ANY 是主机字节序的 IP 地址。通过调用 htons 和 htonl 函数，将它们转换为网络字节序的端口号和 IP 地址。
